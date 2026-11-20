@@ -1,0 +1,16 @@
+name: simple_roku_remote
+description: A standalone, local-network Roku remote for Android and iPhone.
+publish_to: none
+version: 0.2.0+2
+environment:
+  sdk: '>=3.13.0 <4.0.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  xml: 7.1.0
+  shared_preferences: 2.5.6
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+flutter:
+  uses-material-design: true

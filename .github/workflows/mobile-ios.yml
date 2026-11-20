@@ -1,0 +1,46 @@
+name: Standalone iPhone build
+on:
+  push:
+    paths:
+      - 'mobile/**'
+      - '.github/workflows/mobile-ios.yml'
+  pull_request:
+    paths:
+      - 'mobile/**'
+      - '.github/workflows/mobile-ios.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ios:
+    runs-on: macos-latest
+    timeout-minutes: 40
+    env:
+      CI: 'true'
+      FLUTTER_SUPPRESS_ANALYTICS: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install official Flutter on the hosted Mac
+        run: python3 mobile/tool/install_flutter.py "$RUNNER_TEMP/roku-sdk"
+      - name: Prepare native project
+        run: python3 mobile/tool/prepare.py "$RUNNER_TEMP/roku-app" --flutter "$RUNNER_TEMP/roku-sdk/flutter/bin/flutter"
+      - name: Resolve dependencies
+        working-directory: ${{ runner.temp }}/roku-app
+        run: '"$RUNNER_TEMP/roku-sdk/flutter/bin/flutter" pub get'
+      - name: Test shared client and phone interface
+        working-directory: ${{ runner.temp }}/roku-app
+        run: '"$RUNNER_TEMP/roku-sdk/flutter/bin/flutter" test --reporter expanded'
+      - name: Compile the iPhone app without signing
+        working-directory: ${{ runner.temp }}/roku-app
+        run: '"$RUNNER_TEMP/roku-sdk/flutter/bin/flutter" build ios --release --no-codesign'
+      - name: Package unsigned iPhone app
+        run: |
+          mkdir -p "$RUNNER_TEMP/ios-output/Payload"
+          ditto "$RUNNER_TEMP/roku-app/build/ios/iphoneos/Runner.app" "$RUNNER_TEMP/ios-output/Payload/Runner.app"
+          cd "$RUNNER_TEMP/ios-output"
+          zip -qry simple-roku-remote-ios-unsigned.ipa Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ios-unsigned
+          path: ${{ runner.temp }}/ios-output/simple-roku-remote-ios-unsigned.ipa
+          retention-days: 14
