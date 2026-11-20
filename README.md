@@ -4,14 +4,16 @@ A small, open source phone remote for Roku TVs. Open a local web page on your ph
 
 **MIT licensed. Python standard library only. No account, subscription, analytics, cloud relay, or TV installation.**
 
+![Mobile remote interface](docs/remote.svg)
+
 ## What it does
 
 - Directional pad, OK, Home, Back, and Options.
 - Volume, mute, play/pause, rewind, and fast forward.
-- Power on/off on supported Roku TVs.
+- Separate, clearly labeled Turn TV on and Turn off buttons on supported Roku TVs.
 - YouTube, Netflix, and Prime Video shortcuts when installed, plus an installed-app grid.
 - HDMI 1/2/3 selection on compatible TVs.
-- Text entry for supported TV text fields.
+- A Type on TV text box directly on the Remote screen, plus an expanded Keyboard tab with Delete and OK.
 - Several phones can pair with the same running remote.
 
 This is a controller for the existing Roku system. It does not replace Roku OS, speed up streaming apps, or stream the TV picture to the phone. Text input and some buttons depend on the TV and foreground app.
@@ -31,8 +33,9 @@ The terminal prints a local URL and a six-digit pairing code:
 1. Connect your phone, computer, and TV to the same local Wi-Fi network.
 2. Open the printed http:// address in your phone's browser.
 3. Enter the pairing code.
-4. If the TV is in standby, use the power button first.
-5. Optionally add the page to your phone's Home Screen.
+4. Tap Turn TV on to wake a TV in standby. The app shows Waking TV and briefly holds queued controls while it wakes.
+5. To type, first open a search or text field on the TV. Enter words in Type on TV on the Remote screen, then tap Send. The Keyboard tab also offers Delete and Press OK on TV. Text entry depends on the TV app.
+6. Optionally add the page to your phone's Home Screen.
 
 Keep the computer running. On macOS, --keep-awake prevents idle system sleep while this process is running; it does not prevent the display from sleeping. Press Ctrl+C in the terminal to stop the remote. Restarting generates a new pairing code and clears sessions.
 
@@ -49,7 +52,7 @@ The local page uses HTTP, so pairing and control traffic are not encrypted. Use 
 ## Troubleshooting
 
 - **Phone cannot open the page:** check that the computer is awake and on the same network. Allow incoming connections for Python if your computer's firewall asks. Guest networks may isolate devices.
-- **TV unavailable:** confirm its address and Wi-Fi connection. Wake the TV with Power before other commands. Network wake availability depends on the TV's power settings.
+- **TV unavailable:** confirm its address and Wi-Fi connection. Wake the TV with Turn TV on before other commands. Network wake availability depends on the TV's power settings.
 - **Controls rejected:** check Settings > System > Advanced system settings > Control by mobile apps. Menu names vary by Roku version.
 - **Typing has no effect:** first select a text field on the TV. Not every streaming app supports Roku's literal-text input.
 - **Connection times out:** check the TV before repeating a command; a timed-out request may already have reached it.

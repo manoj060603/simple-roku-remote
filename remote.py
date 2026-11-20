@@ -20,7 +20,7 @@ import time
 from urllib.parse import quote, urlsplit
 import xml.etree.ElementTree as ET
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 KEYS = frozenset(("Home Back Up Down Left Right Select Play Rev Fwd InstantReplay "
                  "Info VolumeUp VolumeDown VolumeMute PowerOn PowerOff "
                  "InputHDMI1 InputHDMI2 InputHDMI3 Backspace Search").split())
@@ -196,6 +196,7 @@ PAGE = r"""<!doctype html>
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0,#1c3039 0,transparent 65%);min-height:100dvh}button,input,textarea{font:inherit}button{cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;color:inherit}button:disabled{opacity:.45;cursor:wait}button:active{transform:scale(.96);background:#314653}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:4px}button,a,input,textarea{-webkit-touch-callout:none}button svg{width:24px;height:24px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}.hidden{display:none!important}.shell{width:min(100%,460px);margin:auto;padding:24px 22px max(22px,env(safe-area-inset-bottom));min-height:100dvh}.brand{font-size:.75rem;letter-spacing:.19em;font-weight:750;color:#b6c6ce;margin:0 0 25px}.head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}h1{font-size:2rem;line-height:1.15;letter-spacing:-.06em;margin:0 0 8px;font-weight:650}p{line-height:1.5}.status{font-size:.875rem;color:var(--muted);margin:0;display:flex;align-items:center;gap:8px}.dot{width:7px;height:7px;flex:none;background:var(--accent);border-radius:50%}.dot.offline{background:#e5b176}.icon-button{width:52px;height:52px;border-radius:50%;background:var(--panel);border:1px solid var(--line);display:grid;place-items:center;flex:none}.power{color:var(--accent)}.tabs{display:flex;padding:5px;background:#111a21;border:1px solid var(--line);border-radius:16px;gap:3px;margin-bottom:24px}.tab{flex:1;border:0;border-radius:11px;background:transparent;padding:11px 4px;font-weight:650;font-size:.9rem;color:var(--muted)}.tab[aria-selected=true]{background:#2b3d48;color:#fff}.utility{display:flex;justify-content:space-between;gap:12px;max-width:300px;margin:0 auto 17px}.utility button{width:74px;height:47px;border:1px solid var(--line);border-radius:16px;background:var(--panel);display:grid;place-items:center}.pad{width:266px;height:266px;display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);gap:3px;margin:auto;padding:13px;border:1px solid #364b58;border-radius:50%;background:linear-gradient(145deg,#273b46,#14212a);box-shadow:0 15px 35px #0005}.pad button{border:0;background:transparent;border-radius:30px;display:grid;place-items:center}.pad button:active{background:#3d5663}.pad .select{background:var(--accent);color:#12251f;box-shadow:0 3px 16px #0003;font-size:1.12rem;font-weight:800;border-radius:50%;margin:4px}.pad svg{width:27px;height:27px;stroke-width:2.3}.up{grid-area:1/2}.left{grid-area:2/1}.select{grid-area:2/2}.right{grid-area:2/3}.down{grid-area:3/2}.volume{display:grid;grid-template-columns:1fr 1.15fr 1fr;max-width:300px;margin:23px auto 15px;background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden}.volume button{display:flex;align-items:center;justify-content:center;gap:8px;height:56px;border:0;background:transparent}.volume .mute{border-left:1px solid var(--line);border-right:1px solid var(--line);font-size:.875rem}.media{display:flex;justify-content:center;gap:15px;margin:0 0 27px}.media button{height:49px;width:76px;background:transparent;border:1px solid var(--line);border-radius:16px;display:grid;place-items:center}.media .play{background:#273b46;border-color:#3c5361}.section-label{font-size:.75rem;color:var(--muted);font-weight:650;letter-spacing:.14em;text-transform:uppercase;margin:0 0 12px}.shortcuts,.app-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.app-grid{grid-template-columns:repeat(2,1fr)}.app-button{border:1px solid var(--line);background:var(--panel);border-radius:16px;min-height:64px;padding:14px 8px;font-size:.875rem;line-height:1.3;font-weight:700;overflow-wrap:anywhere}.app-button.youtube{color:#ffaaa5}.app-button.netflix{color:#ff7685}.app-button.prime{color:#9bd7ff}.inputs{display:flex;gap:8px;margin:12px 0 25px}.inputs button{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 4px;font-size:.875rem}.hint{color:var(--muted);font-size:.875rem;line-height:1.6;margin:17px 0}.pair-card{margin-top:11vh;padding:26px 23px;border:1px solid #354b56;border-radius:25px;background:#14222bea;box-shadow:0 25px 65px #0004}.pair-card h1{font-size:2rem}.pair-card p{color:var(--muted);font-size:.95rem}.pair-card label{font-size:.875rem;font-weight:650;display:block;margin:28px 0 10px}.pair-card input{display:block;width:100%;border-radius:14px;border:1px solid #3a5260;background:#0c171e;color:#edf3f5;padding:17px 12px;text-align:center;letter-spacing:.35em;font-size:1.85rem;font-weight:650;min-height:72px}.primary{width:100%;padding:16px;background:var(--accent);color:#14291f;font-weight:750;border-radius:14px;border:0;margin-top:17px;min-height:54px}.error{color:#ffc0b7!important;min-height:22px;font-size:.875rem!important}textarea{width:100%;height:155px;padding:16px;border:1px solid #415663;background:#13212a;border-radius:17px;color:#edf3f5;resize:vertical;font-size:1.05rem}.text-actions{display:flex;gap:10px;margin-top:12px}.text-actions button{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 18px;flex:1}.text-actions .primary{margin:0;background:var(--accent);color:#14291f}.footer{display:flex;justify-content:space-between;gap:10px;margin:29px 0 0;color:var(--muted);font-size:.75rem}.footer a,.link-button{color:var(--muted);text-decoration:none}.link-button{border:0;background:none;padding:0;font-size:.75rem}.toast{position:fixed;bottom:max(20px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:max-content;max-width:calc(100vw - 32px);padding:13px 18px;background:#edf3f5;color:#12232b;border-radius:14px;box-shadow:0 8px 30px #0005;font-size:.875rem;z-index:10;pointer-events:none;text-align:center}.empty{color:var(--muted);font-size:.95rem;grid-column:1/-1}.refresh{margin:0 0 18px;color:var(--accent);border:1px solid var(--line);background:var(--panel);padding:10px 16px;border-radius:12px}
 @media(max-height:760px){.shell{padding-top:18px}.brand{margin-bottom:18px}.head{margin-bottom:18px}.tabs{margin-bottom:18px}.pad{width:238px;height:238px}.volume{margin-top:18px}.media{margin-bottom:21px}.footer{margin-top:23px}}
 @media(prefers-reduced-motion:no-preference){button{transition:background .12s,transform .1s}}
+.power-controls{display:flex;gap:10px;margin:-4px 0 18px}.power-controls button{display:flex;align-items:center;justify-content:center;gap:9px;min-height:50px;border:1px solid var(--line);border-radius:14px;padding:12px 15px;font-weight:650;font-size:.9rem}.power-controls .wake{flex:1;background:var(--accent);color:#14291f;border-color:var(--accent)}.power-controls .sleep{background:var(--panel);color:var(--muted)}.quick-type{margin:0 0 22px}.quick-type label{display:block;font-size:.9rem;font-weight:650;margin-bottom:9px}.quick-type-row{display:flex;gap:8px}.quick-type input{min-width:0;width:100%;flex:1;font-size:1rem;border:1px solid #415663;background:#13212a;border-radius:12px;padding:13px 12px;color:#edf3f5}.quick-type button{border:0;border-radius:12px;padding:12px 17px;background:var(--accent);color:#14291f;font-weight:700;font-size:.9rem}.quick-type .hint{font-size:.875rem;margin:8px 0 0;line-height:1.45}.text-confirm{width:100%;margin-top:10px;background:var(--panel);color:var(--muted);border:1px solid var(--line);border-radius:12px;padding:12px}
 </style></head><body>
 <svg style="display:none" aria-hidden="true"><defs>
 <symbol id="i-up" viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></symbol>
@@ -227,13 +228,15 @@ PAGE = r"""<!doctype html>
 </form>
 </section>
 <section id="remote-view" class="hidden">
-<header class="head"><div><h1>Living room</h1><p class="status" role="status"><span class="dot" id="status-dot"></span><span id="connection-label">Connecting</span></p></div><button class="icon-button power" id="power" aria-label="Turn TV off"><svg><use href="#i-power"/></svg></button></header>
+<header class="head"><div><h1>Living room</h1><p class="status" role="status"><span class="dot" id="status-dot"></span><span id="connection-label">Connecting</span></p></div></header>
+<div class="power-controls" aria-label="TV power"><button class="wake" id="power-on"><svg aria-hidden="true"><use href="#i-power"/></svg>Turn TV on</button><button class="sleep" id="power-off">Turn off</button></div>
 <div class="tabs" role="tablist" aria-label="Remote sections">
 <button class="tab" id="tab-remote" role="tab" aria-selected="true" aria-controls="panel-remote" data-tab="remote">Remote</button>
 <button class="tab" id="tab-apps" role="tab" aria-selected="false" aria-controls="panel-apps" data-tab="apps">Apps</button>
-<button class="tab" id="tab-type" role="tab" aria-selected="false" aria-controls="panel-type" data-tab="type">Type</button>
+<button class="tab" id="tab-type" role="tab" aria-selected="false" aria-controls="panel-type" data-tab="type">Keyboard</button>
 </div>
 <section id="panel-remote" role="tabpanel" aria-labelledby="tab-remote">
+<form class="quick-type" id="quick-type-form"><label for="quick-text">Type on TV</label><div class="quick-type-row"><input id="quick-text" type="text" maxlength="80" placeholder="Search or enter text" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="send" aria-describedby="quick-type-help"><button id="quick-send" type="submit">Send</button></div><p class="hint" id="quick-type-help">First open a search or text box on the TV.</p></form>
 <div class="utility"><button data-key="Back" aria-label="Back"><svg><use href="#i-back"/></svg></button><button data-key="Home" aria-label="Home"><svg><use href="#i-home"/></svg></button><button data-key="Info" aria-label="Options"><svg><use href="#i-more"/></svg></button></div>
 <div class="pad" aria-label="Directional controls">
 <button class="up" data-key="Up" aria-label="Up"><svg><use href="#i-up"/></svg></button><button class="left" data-key="Left" aria-label="Left"><svg><use href="#i-left"/></svg></button><button class="select" data-key="Select" aria-label="Select">OK</button><button class="right" data-key="Right" aria-label="Right"><svg><use href="#i-right"/></svg></button><button class="down" data-key="Down" aria-label="Down"><svg><use href="#i-down"/></svg></button>
@@ -251,6 +254,7 @@ PAGE = r"""<!doctype html>
 <label for="tv-text" class="section-label" style="display:block">Send text to TV</label>
 <textarea id="tv-text" maxlength="80" rows="4" placeholder="What would you like to watch?" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
 <div class="text-actions"><button data-key="Backspace">Delete</button><button class="primary" id="send-text">Send text</button></div>
+<button class="text-confirm" data-key="Select">Press OK on TV</button>
 <p class="hint">Up to 80 characters. Text is sent to the TV and is not saved.</p>
 </section>
 <footer class="footer"><a href="https://github.com/manoj060603/simple-roku-remote" target="_blank" rel="noopener noreferrer">Open source · MIT</a><button id="unpair" class="link-button">Disconnect phone</button></footer>
@@ -283,7 +287,7 @@ function renderApps(){
  if(!state.apps.length){const empty=document.createElement("p");empty.className="empty";empty.textContent="No apps found. Check the TV connection.";grid.appendChild(empty);}
 }
 async function refresh(){
- try{const info=await api("status");showPaired(true);state.power=info.power;byId("connection-label").textContent=(info.power==="PowerOn"?"Connected":"Standby")+" · "+info.model;byId("status-dot").classList.remove("offline");byId("power").setAttribute("aria-label",info.power==="PowerOn"?"Turn TV off":"Turn TV on");const signature=JSON.stringify(info.apps);if(signature!==JSON.stringify(state.apps)){state.apps=info.apps;renderApps();}}
+ try{const info=await api("status");showPaired(true);state.power=info.power;byId("connection-label").textContent=(info.power==="PowerOn"?"Connected":"Standby · tap Turn TV on")+" · "+info.model;byId("status-dot").classList.toggle("offline",info.power!=="PowerOn");const signature=JSON.stringify(info.apps);if(signature!==JSON.stringify(state.apps)){state.apps=info.apps;renderApps();}}
  catch(error){if(error.status===401)showPaired(false);else if(error.status===502||error.status===503){showPaired(true);offline();}else if(state.paired)offline();}
 }
 function enqueue(action){
@@ -296,8 +300,33 @@ function key(value){if(navigator.vibrate)navigator.vibrate(9);enqueue(function()
 document.querySelectorAll("[data-key]").forEach(function(button){button.addEventListener("click",function(){key(button.dataset.key);});});
 document.querySelectorAll("[data-tab]").forEach(function(button){button.addEventListener("click",function(){document.querySelectorAll("[data-tab]").forEach(function(tab){tab.setAttribute("aria-selected",String(tab===button));});["remote","apps","type"].forEach(function(name){byId("panel-"+name).classList.toggle("hidden",name!==button.dataset.tab);});});});
 byId("pair-form").addEventListener("submit",async function(event){event.preventDefault();byId("pair-button").disabled=true;byId("pair-error").textContent="";try{await api("pair",{code:byId("pair-code").value});byId("pair-code").value="";showPaired(true);await refresh();}catch(error){byId("pair-error").textContent=error.message||"Could not connect. Check the Mac and Wi-Fi.";}finally{byId("pair-button").disabled=false;}});
-byId("power").addEventListener("click",function(){enqueue(async function(){const value=state.power==="PowerOn"?"PowerOff":"PowerOn";await api("key",{key:value});state.power=value==="PowerOn"?"PowerOn":"Ready";byId("power").setAttribute("aria-label",state.power==="PowerOn"?"Turn TV off":"Turn TV on");byId("connection-label").textContent=value==="PowerOn"?"Waking the TV…":"Standby";setTimeout(refresh,1200);});});
-byId("send-text").addEventListener("click",function(){const input=byId("tv-text");if(!input.value.trim()){toast("Type something first.");return;}const value=input.value;byId("send-text").disabled=true;const accepted=enqueue(async function(){try{const result=await api("text",{text:value});if(input.value===value)input.value="";toast("Sent "+result.sent+" characters.");}finally{byId("send-text").disabled=false;}});if(!accepted)byId("send-text").disabled=false;});
+function setPower(turnOn){
+ enqueue(async function(){
+  byId("power-on").disabled=true;byId("power-off").disabled=true;
+  try{
+   await api("key",{key:turnOn?"PowerOn":"PowerOff"});state.power=turnOn?"PowerOn":"Ready";
+   byId("connection-label").textContent=turnOn?"Waking TV… please wait a few seconds":"Standby · tap Turn TV on";
+   if(turnOn){toast("Waking TV… controls will follow in a few seconds.");await new Promise(function(resolve){setTimeout(resolve,5000);});}
+   await refresh();
+  }finally{byId("power-on").disabled=false;byId("power-off").disabled=false;}
+ });
+}
+byId("power-on").addEventListener("click",function(){setPower(true);});
+byId("power-off").addEventListener("click",function(){setPower(false);});
+function sendText(inputId){
+ const input=byId(inputId),value=input.value;
+ if(!value.trim()){toast("Type something first.");input.focus();return;}
+ byId("send-text").disabled=true;byId("quick-send").disabled=true;
+ const reset=function(){byId("send-text").disabled=false;byId("quick-send").disabled=false;};
+ const accepted=enqueue(async function(){
+  try{const result=await api("text",{text:value});["tv-text","quick-text"].forEach(function(id){if(byId(id).value===value)byId(id).value="";});toast("Sent "+result.sent+" characters. Use OK on the TV if needed.");}
+  finally{reset();}
+ });
+ if(!accepted)reset();
+}
+["tv-text","quick-text"].forEach(function(id){byId(id).addEventListener("input",function(){byId(id==="tv-text"?"quick-text":"tv-text").value=byId(id).value;});});
+byId("quick-type-form").addEventListener("submit",function(event){event.preventDefault();sendText("quick-text");});
+byId("send-text").addEventListener("click",function(){sendText("tv-text");});
 byId("unpair").addEventListener("click",function(){enqueue(async function(){await api("unpair",{});showPaired(false);});});
 document.addEventListener("keydown",function(event){if(!state.paired||/INPUT|TEXTAREA/.test(event.target.tagName)||event.ctrlKey||event.metaKey||event.altKey)return;const map={ArrowUp:"Up",ArrowDown:"Down",ArrowLeft:"Left",ArrowRight:"Right",Enter:"Select",Escape:"Back"," ":"Play"};if(map[event.key]){event.preventDefault();key(map[event.key]);}});
 document.addEventListener("visibilitychange",function(){if(!document.hidden)refresh();});
