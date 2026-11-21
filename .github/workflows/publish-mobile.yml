@@ -1,0 +1,78 @@
+name: Publish standalone phone downloads
+on:
+  workflow_dispatch:
+    inputs:
+      artifact_base_url:
+        description: Temporary HTTPS origin serving the completed public ARC artifacts
+        required: true
+        type: string
+      apk_sha256:
+        description: Verified SHA-256 of the ARC-built Android APK
+        required: true
+        type: string
+      source_commit:
+        description: Exact source commit built on ARC
+        required: true
+        type: string
+permissions:
+  contents: write
+  actions: read
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      ARTIFACT_ORIGIN: ${{ inputs.artifact_base_url }}
+      EXPECTED_APK_SHA: ${{ inputs.apk_sha256 }}
+      SOURCE_COMMIT: ${{ inputs.source_commit }}
+    steps:
+      - name: Validate and collect the completed ARC build
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,os,pathlib,re,urllib.request
+          origin=os.environ["ARTIFACT_ORIGIN"]
+          expected=os.environ["EXPECTED_APK_SHA"]
+          commit=os.environ["SOURCE_COMMIT"]
+          if not re.fullmatch(r"https://[a-z0-9-]+\.trycloudflare\.com",origin):raise SystemExit("Unexpected artifact origin")
+          if not re.fullmatch(r"[0-9a-f]{64}",expected):raise SystemExit("Invalid APK checksum")
+          if not re.fullmatch(r"[0-9a-f]{40}",commit):raise SystemExit("Invalid source commit")
+          out=pathlib.Path("downloads");out.mkdir()
+          def get(name,maximum):
+              with urllib.request.urlopen(origin+"/"+name,timeout=120) as response:
+                  data=response.read(maximum+1)
+              if len(data)>maximum:raise SystemExit("Artifact size limit exceeded")
+              return data
+          manifest=json.loads(get("manifest.json",16384))
+          if manifest.get("version")!="0.2.0" or manifest.get("source_commit")!=commit:raise SystemExit("Artifact provenance mismatch")
+          allowed={"simple-roku-remote-android.apk","mobile-connect.png","mobile-remote.png","mobile-keyboard.png"}
+          if not manifest["files"].keys()<=allowed:raise SystemExit("Unexpected artifact filename")
+          if manifest["files"].get("simple-roku-remote-android.apk")!=expected:raise SystemExit("APK checksum differs from the reviewed build")
+          for name,digest in manifest["files"].items():
+              data=get(name,100000000 if name.endswith(".apk") else 5000000)
+              if hashlib.sha256(data).hexdigest()!=digest:raise SystemExit("Artifact integrity check failed: "+name)
+              (out/name).write_bytes(data)
+          (out/"build-manifest.json").write_text(json.dumps(manifest,indent=2)+"\n")
+          (out/"SHA256SUMS").write_text("".join(value+"  "+name+"\n" for name,value in manifest["files"].items()))
+          PY
+      - name: Publish version 0.2.0
+        run: |
+          if gh release view v0.2.0 >/dev/null 2>&1; then
+            echo "This release already exists; refusing to overwrite it."
+            exit 1
+          fi
+          cat > release-notes.md <<'NOTES'
+          A standalone phone remote for Roku TVs and players.
+
+          - Android: download simple-roku-remote-android.apk to your phone and install it.
+          - Connect the phone and TV to the same Wi-Fi and enter the TV address from Settings > Network > About.
+          - Navigation, power, volume, playback, app shortcuts, HDMI on supported TVs, and text entry for supported TV fields.
+          - No laptop, ARC service, account, cloud relay, or pairing code is required while using the installed app.
+          - The TV must remain network-reachable for power-on. Text support depends on the foreground TV app.
+
+          Android was built on Virginia Tech ARC using a personal signing identity kept private on the build worker. Shared client and widget tests use fake TVs; physical phone/TV verification is still required. Not every streaming app accepts typed text.
+
+          MIT licensed. Source and build instructions are in mobile/ at the release commit.
+          NOTES
+          gh release create v0.2.0 downloads/* --target "$SOURCE_COMMIT" --title "Standalone phone remote 0.2.0" --notes-file release-notes.md

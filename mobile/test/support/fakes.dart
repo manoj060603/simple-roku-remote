@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:simple_roku_remote/roku.dart';
 import 'package:simple_roku_remote/preferences.dart';
 
@@ -31,9 +32,15 @@ class FakeTransport implements RokuTransport {
     }
     throw const RokuException('Unexpected request');
   }
-  List<String> get commands => requests.where((r) => r.method == 'POST').map((r) => r.uri.pathSegments.last).toList();
+
+  List<String> get commands => requests
+      .where((r) => r.method == 'POST')
+      .map((r) => r.uri.pathSegments.last)
+      .toList();
   @override
-  void close() { closed = true; }
+  void close() {
+    closed = true;
+  }
 }
 
 class MemoryTvStore implements TvStore {
@@ -42,7 +49,12 @@ class MemoryTvStore implements TvStore {
   @override
   Future<String?> load() async => value;
   @override
-  Future<void> save(String host) async { value = host; }
+  Future<void> save(String host) async {
+    value = host;
+  }
+
   @override
-  Future<void> clear() async { value = null; }
+  Future<void> clear() async {
+    value = null;
+  }
 }

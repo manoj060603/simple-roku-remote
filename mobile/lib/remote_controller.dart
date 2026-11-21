@@ -1,13 +1,17 @@
 import 'dart:async';
+
 import 'package:flutter/foundation.dart';
+
 import 'roku.dart';
 
 typedef RokuFactory = RokuClient Function(String address);
 
 class RemoteController extends ChangeNotifier {
-  RemoteController({RokuFactory? clientFactory, Future<void> Function(Duration)? delay})
-      : _factory = clientFactory ?? ((host) => RokuClient(host)),
-        _delay = delay ?? ((duration) => Future<void>.delayed(duration));
+  RemoteController({
+    RokuFactory? clientFactory,
+    Future<void> Function(Duration)? delay,
+  }) : _factory = clientFactory ?? ((host) => RokuClient(host)),
+       _delay = delay ?? ((duration) => Future<void>.delayed(duration));
   final RokuFactory _factory;
   final Future<void> Function(Duration) _delay;
   RokuClient? _client;
@@ -24,7 +28,9 @@ class RemoteController extends ChangeNotifier {
   int pending = 0;
 
   bool get canControl => _client != null && !connecting;
-  void _changed() { if (!_disposed) notifyListeners(); }
+  void _changed() {
+    if (!_disposed) notifyListeners();
+  }
 
   Future<bool> connect(String address) async {
     final validated = validateTvAddress(address);
@@ -58,7 +64,10 @@ class RemoteController extends ChangeNotifier {
       if (generation == _generation) error = _message(failure);
       return false;
     } finally {
-      if (generation == _generation) { connecting = false; _changed(); }
+      if (generation == _generation) {
+        connecting = false;
+        _changed();
+      }
     }
   }
 
@@ -78,14 +87,22 @@ class RemoteController extends ChangeNotifier {
         apps = installed;
       }
     } catch (failure) {
-      if (generation == _generation) { reachable = false; error = _message(failure); }
+      if (generation == _generation) {
+        reachable = false;
+        error = _message(failure);
+      }
     }
     _changed();
   }
 
-  String _message(Object error) => error is RokuException ? error.message : 'Could not reach the TV. Check Wi-Fi and try again.';
+  String _message(Object error) => error is RokuException
+      ? error.message
+      : 'Could not reach the TV. Check Wi-Fi and try again.';
 
-  Future<bool> _enqueue(Future<void> Function(RokuClient) action, {String? label}) {
+  Future<bool> _enqueue(
+    Future<void> Function(RokuClient) action, {
+    String? label,
+  }) {
     final client = _client;
     if (client == null || connecting) return Future.value(false);
     if (pending >= 6) {
@@ -98,12 +115,18 @@ class RemoteController extends ChangeNotifier {
     pending++;
     _changed();
     _tail = _tail.then((_) async {
-      if (_disposed || generation != _generation) { result.complete(false); return; }
+      if (_disposed || generation != _generation) {
+        result.complete(false);
+        return;
+      }
       activity = label;
       _changed();
       try {
         await action(client);
-        if (_disposed || generation != _generation) { result.complete(false); return; }
+        if (_disposed || generation != _generation) {
+          result.complete(false);
+          return;
+        }
         error = null;
         reachable = true;
         result.complete(true);
@@ -123,7 +146,9 @@ class RemoteController extends ChangeNotifier {
 
   Future<bool> press(String key) => _enqueue((client) => client.key(key));
   Future<bool> launch(String id) => _enqueue((client) => client.launch(id));
-  Future<bool> type(String text) => _enqueue((client) async { await client.sendText(text); }, label: 'Sending text…');
+  Future<bool> type(String text) => _enqueue((client) async {
+    await client.sendText(text);
+  }, label: 'Sending text…');
 
   Future<bool> turnOn() => _enqueue((client) async {
     await client.key('PowerOn');

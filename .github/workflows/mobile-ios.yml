@@ -1,13 +1,5 @@
 name: Standalone iPhone build
 on:
-  push:
-    paths:
-      - 'mobile/**'
-      - '.github/workflows/mobile-ios.yml'
-  pull_request:
-    paths:
-      - 'mobile/**'
-      - '.github/workflows/mobile-ios.yml'
   workflow_dispatch:
 permissions:
   contents: read

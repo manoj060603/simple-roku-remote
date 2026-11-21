@@ -28,7 +28,7 @@ def prepare(source,dest,flutter):
         target=dest/name
         if target.exists():shutil.rmtree(target)
         shutil.copytree(source/name,target)
-    for name in ["pubspec.yaml","pubspec.lock"]:
+    for name in ["pubspec.yaml","pubspec.lock","analysis_options.yaml"]:
         if (source/name).exists():shutil.copy2(source/name,dest/name)
     ET.register_namespace("android",ANDROID)
     manifest=dest/"android/app/src/main/AndroidManifest.xml"
@@ -68,6 +68,8 @@ def prepare(source,dest,flutter):
     properties=dest/"android/gradle.properties"
     value=properties.read_text()
     if "org.gradle.workers.max" not in value:value+="\norg.gradle.workers.max=4\n"
+    import re
+    value=re.sub(r"org.gradle.jvmargs=.*", "org.gradle.jvmargs=-Xmx4G -XX:MaxMetaspaceSize=1G -XX:ReservedCodeCacheSize=256m -XX:+HeapDumpOnOutOfMemoryError",value)
     properties.write_text(value)
     print("Prepared "+str(dest))
 
