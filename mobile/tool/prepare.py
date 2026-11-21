@@ -21,8 +21,7 @@ def prepare(source,dest,flutter):
     if dest.exists() and any(dest.iterdir()) and not (dest/".simple-roku-generated").exists():
         raise SystemExit("Destination is not an owned generated project.")
     dest.mkdir(parents=True,exist_ok=True)
-    if not (dest/"android").exists() or not (dest/"ios").exists():
-        subprocess.run([flutter,"create","--platforms=android,ios","--project-name=simplerokuremote","--org=io.github.manoj060603","--no-pub",str(dest)],check=True)
+    subprocess.run([flutter,"create","--overwrite","--platforms=android,ios","--project-name=simplerokuremote","--org=io.github.manoj060603","--no-pub",str(dest)],check=True)
     (dest/".simple-roku-generated").touch()
     for name in ["lib","test"]:
         target=dest/name
@@ -48,6 +47,7 @@ def prepare(source,dest,flutter):
     content=gradle.read_text().replace("compileSdk = flutter.compileSdkVersion","compileSdk = 36").replace("targetSdk = flutter.targetSdkVersion","targetSdk = 36")
     content=content.replace('android {', 'val rokuKeystore = System.getenv("ROKU_KEYSTORE")\n\nandroid {\n    signingConfigs {\n        if (rokuKeystore != null) {\n            create("personal") {\n                storeFile = file(rokuKeystore)\n                storePassword = System.getenv("ROKU_STORE_PASSWORD")\n                keyAlias = "roku"\n                keyPassword = System.getenv("ROKU_STORE_PASSWORD")\n            }\n        }\n    }\n',1)
     content=content.replace('signingConfigs.getByName("debug")','signingConfigs.getByName(if (rokuKeystore != null) "personal" else "debug")')
+    if content.count("val rokuKeystore =") != 1:raise SystemExit("The generated signing configuration is not unique.")
     gradle.write_text(content)
     plist=dest/"ios/Runner/Info.plist"
     with plist.open("rb") as file: info=plistlib.load(file)
